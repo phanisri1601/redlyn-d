@@ -1,0 +1,16 @@
+CREATE TABLE users (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT NOT NULL, password TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), expires INTEGER NOT NULL);
+CREATE TABLE projects (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id), name TEXT NOT NULL, client TEXT NOT NULL DEFAULT '', url TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', environment TEXT NOT NULL DEFAULT 'staging', archived INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL);
+CREATE TABLE members (project_id TEXT NOT NULL REFERENCES projects(id), user_id TEXT NOT NULL REFERENCES users(id), role TEXT NOT NULL DEFAULT 'developer', PRIMARY KEY(project_id,user_id));
+CREATE TABLE links (id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id), token_hash TEXT UNIQUE NOT NULL, label TEXT NOT NULL DEFAULT 'Client link', expires INTEGER, revoked INTEGER NOT NULL DEFAULT 0, require_email INTEGER NOT NULL DEFAULT 0, password TEXT, can_comment INTEGER NOT NULL DEFAULT 1, can_approve INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL);
+CREATE TABLE reviewers (token TEXT PRIMARY KEY, link_id TEXT NOT NULL REFERENCES links(id), name TEXT NOT NULL, email TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL);
+CREATE TABLE feedback (id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id), number INTEGER NOT NULL, author TEXT NOT NULL, text TEXT NOT NULL, internal INTEGER NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT 'Open', priority TEXT NOT NULL DEFAULT 'Normal', assignee TEXT NOT NULL DEFAULT '', device TEXT NOT NULL, anchor TEXT NOT NULL, page TEXT NOT NULL, metadata TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE comments (id TEXT PRIMARY KEY, feedback_id TEXT NOT NULL REFERENCES feedback(id), author TEXT NOT NULL, text TEXT NOT NULL, internal INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL);
+CREATE TABLE attachments (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, feedback_id TEXT NOT NULL REFERENCES feedback(id), comment_id TEXT, name TEXT NOT NULL, mime TEXT NOT NULL, size INTEGER NOT NULL, internal INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL);
+CREATE TABLE approvals (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, page TEXT NOT NULL, author TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE activity (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, author TEXT NOT NULL, text TEXT NOT NULL, internal INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL);
+CREATE TABLE invitations (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL, token_hash TEXT UNIQUE NOT NULL, expires INTEGER NOT NULL, accepted INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX feedback_project ON feedback(project_id,status);
+CREATE INDEX comments_feedback ON comments(feedback_id);
+CREATE INDEX activity_project ON activity(project_id,created_at);
+CREATE INDEX attachments_feedback ON attachments(feedback_id);
