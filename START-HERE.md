@@ -1,14 +1,17 @@
-# Your GitHub / Vercel copy
+# Your current Redlyn project
 
-Copy this entire `redlyn-d` folder from Downloads to Documents.
-The files `package.json` and `vercel.json` must stay together at the project root.
+Use this `redlyn-d` folder. The duplicate original folder was archived in
+`../LOCAL-BACKUP-DO-NOT-UPLOAD`; never upload that backup.
 
-1. Copy this folder to `~/Documents/redlyn-d`.
-2. Follow [the GitHub and Vercel steps](docs/VERCEL-SETUP.md).
-3. Push to `https://github.com/phanisri1601/redlyn-d.git`.
-4. Import that repository into Vercel using Framework **Other**, Node **22.x**.
-5. Connect your Turso database and **private** Vercel Blob store, then redeploy.
+The app now supports your Firebase Firestore project `redlyn-cbbd3`.
+Follow [Firebase setup](docs/FIREBASE-SETUP.md) for local testing and Vercel settings.
+Uploads are disabled for this free text-feedback setup.
 
-This folder includes the source code and deployment configuration. It contains no existing Git history, local account database, user uploads or configured provider credentials. Your existing hosted data is not copied automatically.
+For GitHub, copy the updated source into your existing repository checkout,
+keeping its `.git` directory. Do not copy `.env`, service-account JSON, `.data`,
+`node_modules`, or backup archives into a new repository. The supplied `.gitignore`
+protects local credentials, but inspect the files staged for commit before pushing.
 
-Preparation checks: 35 automated tests passed, build succeeded, and the production dependency audit reported no known vulnerabilities. Live Vercel/Turso/Blob connectivity still needs your service accounts. See the deployment guide for environment variables and the testing checklist.
+The live site only changes after the new source is pushed and Vercel receives
+its Production environment variables. Local SQLite/Site accounts and feedback
+are not automatically migrated to Firebase.

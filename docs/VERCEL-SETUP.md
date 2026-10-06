@@ -1,5 +1,9 @@
 # Deploy Redlyn from GitHub to Vercel
 
+**Current choice: Firebase Spark.** Follow [Firebase setup](FIREBASE-SETUP.md).
+The Turso/Blob steps below describe the optional SQL deployment, not your current free Firebase setup.
+Your GitHub repository already exists; update its existing checkout rather than initializing an unrelated history.
+
 Your prepared project is in `/Users/phani/Downloads/Redlyn/redlyn-d`.
 Copy that entire folder to Documents. The folder containing `package.json` and `vercel.json` is the project root.
 The copy contains source code only. Your existing local users, hosted users, comments and uploaded files are not transferred. Create fresh test accounts after deployment.

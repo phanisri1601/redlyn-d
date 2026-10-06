@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The Vercel server performs authenticated access checks. Browsers never
+    // access Firestore directly; the Admin SDK uses server IAM permissions.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

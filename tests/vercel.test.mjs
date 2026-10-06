@@ -61,7 +61,7 @@ test('Vercel flow persists accounts, protects internal uploads and supports clie
 test('Vercel upload cap fails before private storage and health reports missing setup',async t=>{
   const {browser,calls}=await fixture(t),owner=browser('4.4.4.4');await owner('/api/auth/signup',{name:'Owner',email:'cap@example.test',password:'test-password-123'});const project=(await owner('/api/projects',{name:'Cap QA',url:'https://example.org'})).data;const pin=(await owner('/api/projects/'+project.id+'/feedback',{text:'Cap',device:'desktop',anchor:{x:.2,y:.3}})).data.id;
   const form=new FormData();form.append('file',new File([new Uint8Array(4*1024*1024+1)],'large.png',{type:'image/png'}));const result=await owner('/api/projects/'+project.id+'/feedback/'+pin+'/uploads',form);assert.equal(result.status,400);assert.match(result.data.error,/4 MB/);assert.equal(calls.length,0);
-  const handler=createVercelHandler({});const health=await handler(new Request('https://example.vercel.app/api/health'));assert.equal(health.status,503);assert.deepEqual(await health.json(),{ready:false});const login=await handler(new Request('https://example.vercel.app/api/auth/login'));assert.equal(login.status,503);assert.match((await login.json()).error,/Hosting setup is incomplete/);
+  const handler=createVercelHandler({});const health=await handler(new Request('https://example.vercel.app/api/health'));assert.equal(health.status,503);assert.deepEqual(await health.json(),{ready:false,workspaceReady:false,database:{configured:false,reachable:false,schemaReady:false},uploads:{configured:false}});const login=await handler(new Request('https://example.vercel.app/api/auth/login'));assert.equal(login.status,503);assert.match((await login.json()).error,/TURSO_DATABASE_URL and TURSO_AUTH_TOKEN/);
 });
 test('asset adapter serves preview documents and cannot escape its root',async()=>{
   const assets=assetBinding(path.resolve('public'));const demo=await assets.fetch(new Request('https://example.vercel.app/demo.html'));assert.equal(demo.status,200);assert.match(demo.headers.get('content-type'),/html/);assert.equal((await assets.fetch(new Request('https://example.vercel.app/%2e%2e%2fpackage.json'))).status,404);
@@ -80,4 +80,21 @@ test('Vercel rate limits use the platform IP and ignore spoofed Cloudflare heade
   for(let i=0;i<30;i++)assert.equal((await first('/api/auth/login',invalid,'POST',{'CF-Connecting-IP':'spoof-'+i})).status,401);
   assert.equal((await first('/api/auth/login',invalid,'POST',{'CF-Connecting-IP':'different-spoof'})).status,429);
   assert.equal((await second('/api/auth/login',invalid)).status,401);assert.equal((await DB.prepare('SELECT COUNT(*) AS n FROM rate_limits').first()).n,2);
+});
+
+test('missing Blob does not block database-backed login, comments or approvals',async t=>{
+  const {DB}=await fixture(t);const handler=createVercelHandler({DB});let cookie='';
+  const call=async(route,body,method=body?'POST':'GET')=>{const multipart=body instanceof FormData;const res=await handler(new Request('https://test.vercel.app'+route,{method,headers:{cookie,origin:'https://test.vercel.app','x-forwarded-for':'1.2.3.4',...(!multipart?{'Content-Type':'application/json'}:{})},body:body?(multipart?body:JSON.stringify(body)):undefined}));if(res.headers.get('set-cookie'))cookie=res.headers.get('set-cookie').split(';')[0];return {status:res.status,data:await res.json()};};
+  assert.equal((await call('/api/auth/signup',{name:'Tester',email:'no-blob@example.test',password:'test-password-123'})).status,200);
+  assert.equal((await call('/api/me')).data.user.name,'Tester');
+  const project=(await call('/api/projects',{name:'No Blob test',url:'https://example.org'})).data;
+  const pin=(await call('/api/projects/'+project.id+'/feedback',{text:'Saved without Blob',device:'desktop',anchor:{x:.2,y:.3},page:'/'})).data.id;
+  assert.equal((await call('/api/projects/'+project.id)).data.feedback[0].text,'Saved without Blob');
+  const form=new FormData();form.append('file',new File(['test'],'image.png',{type:'image/png'}));const upload=await call('/api/projects/'+project.id+'/feedback/'+pin+'/uploads',form);assert.equal(upload.status,503);assert.match(upload.data.error,/PRIVATE Blob store/);
+  await call('/api/projects/'+project.id+'/feedback/'+pin,{status:'Resolved'},'PATCH');assert.equal((await call('/api/projects/'+project.id+'/approve',{page:'/'})).status,200);
+  const health=await call('/api/health');assert.equal(health.data.workspaceReady,true);assert.equal(health.data.ready,false);assert.equal(health.data.uploads.configured,false);
+});
+test('health distinguishes unreachable database from missing schema without leaking errors',async()=>{
+  const DB={prepare(){return {async first(){return {ok:1};},async all(){throw new Error('secret provider connection detail');}};}};
+  const health=await createVercelHandler({DB})(new Request('https://test.vercel.app/api/health'));const data=await health.json();assert.equal(data.database.reachable,true);assert.equal(data.database.schemaReady,false);assert.equal(JSON.stringify(data).includes('secret'),false);
 });

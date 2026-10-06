@@ -4,7 +4,7 @@ A working independent reconstruction of the public Redlyn design and its primary
 
 ## Deploy to Vercel
 
-Follow [the Vercel setup guide](docs/VERCEL-SETUP.md). The Node serverless adapter uses Turso for persistent SQLite data and private Vercel Blob storage for uploads. `vercel.json` configures the API/preview routes and frontend. Set the required database/storage environment variables and redeploy before testing accounts and feedback. Never use a local SQLite file as a Vercel production database. Existing local or ChatGPT Site data is not copied automatically.
+Follow [the Vercel setup guide](docs/VERCEL-SETUP.md). The Node serverless adapter supports your Firebase Firestore database; see [Firebase setup](docs/FIREBASE-SETUP.md). The free Firebase setup disables image, screenshot and voice uploads. Turso and private Vercel Blob remain available as an alternative. `vercel.json` configures the API/preview routes and frontend. Set the required database/storage environment variables and redeploy before testing accounts and feedback. Never use a local SQLite file as a Vercel production database. Existing local or ChatGPT Site data is not copied automatically.
 
 ```sh
 npm ci
@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Create an email/password account, then choose **Create demo** to test the complete feedback workflow. Local data is persisted in `.data/redlyn.sqlite`; attachments are stored in `.data/media`. That directory is ignored by Git and is never uploaded.
+Open http://localhost:3000. Create an email/password account, then choose **Create demo** to test the complete feedback workflow. With Firebase credentials in `.env`, local development uses Firestore and disables uploads. Without them, local data is persisted in `.data/redlyn.sqlite` and attachments in `.data/media`. That directory is ignored by Git and is never uploaded.
 
 ```sh
 npm test
