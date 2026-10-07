@@ -4,5 +4,6 @@
   "buildCommand": "npm run build:vercel",
   "regions": [
     "bom1"
-  ]
+  ],
+  "outputDirectory": ".next"
 }
