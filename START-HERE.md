@@ -15,3 +15,5 @@ protects local credentials, but inspect the files staged for commit before pushi
 The live site only changes after the new source is pushed and Vercel receives
 its Production environment variables. Local SQLite/Site accounts and feedback
 are not automatically migrated to Firebase.
+
+The app now uses Next.js. See [Next.js deployment steps](docs/NEXTJS-DEPLOYMENT.md) before redeploying; remove the old Vercel output-directory override.

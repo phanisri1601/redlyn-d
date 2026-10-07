@@ -67,12 +67,13 @@ test('asset adapter serves preview documents and cannot escape its root',async()
   const assets=assetBinding(path.resolve('public'));const demo=await assets.fetch(new Request('https://example.vercel.app/demo.html'));assert.equal(demo.status,200);assert.match(demo.headers.get('content-type'),/html/);assert.equal((await assets.fetch(new Request('https://example.vercel.app/%2e%2e%2fpackage.json'))).status,404);
 });
 
-test('Vercel configuration routes APIs/previews ahead of SPA and keeps assets intact',async()=>{
-  const {getTransformedRoutes}=await import('@vercel/routing-utils');const config=JSON.parse(await readFile('vercel.json','utf8'));const transformed=getTransformedRoutes(config);assert.equal(transformed.error,null);assert.equal(config.outputDirectory,'dist/client');
-  const rewrites=transformed.routes.filter(r=>r.dest);
-  for(const input of ['/api/auth/login','/api/projects/abc/feedback','/api/media/abc','/preview/ticket']) {const first=rewrites.find(r=>new RegExp(r.src).test(input));assert.match(first.dest,/^\/api\/index/);}
-  for(const input of ['/','/signup','/app/team','/t/abc','/c/token']) {const first=rewrites.find(r=>new RegExp(r.src).test(input));assert.equal(first.dest,'/index.html');}
-  for(const input of ['/app.js','/bridge.js','/styles.css','/demo.html'])assert.equal(rewrites.some(r=>new RegExp(r.src).test(input)),false);
+test('Next.js deployment uses native route handlers and the Mumbai region',async()=>{
+  const config=JSON.parse(await readFile('vercel.json','utf8'));
+  assert.equal(config.framework,'nextjs');assert.deepEqual(config.regions,['bom1']);
+  assert.equal(config.outputDirectory,undefined);assert.equal(config.rewrites,undefined);
+  for(const file of ['app/api/[...path]/route.js','app/preview/[...path]/route.js']) {
+    const route=await readFile(file,'utf8');assert.match(route,/runtime='nodejs'/);assert.match(route,/dynamic='force-dynamic'/);assert.match(route,/GET=handleVercelRequest/);assert.match(route,/POST=handleVercelRequest/);
+  }
 });
 
 test('Vercel rate limits use the platform IP and ignore spoofed Cloudflare headers',async t=>{

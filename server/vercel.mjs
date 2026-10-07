@@ -28,7 +28,7 @@ export function assetBinding(root=path.resolve('dist/client')) {
       const pathname=decodeURIComponent(new URL(req.url).pathname);
       const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
       if(!file.startsWith(root+path.sep))return new Response('',{status:404});
-      return new Response(await readFile(file),{headers:{'Content-Type':MIME[path.extname(file)]||'application/octet-stream'}});
+      return new Response(await readFile(/* turbopackIgnore: true */ file),{headers:{'Content-Type':MIME[path.extname(file)]||'application/octet-stream'}});
     } catch {return new Response('',{status:404});}
   }};
 }
@@ -80,7 +80,7 @@ export function createVercelHandler(env) {
 let handler;
 export async function handleVercelRequest(req) {
   if(!handler) {
-    const env={...process.env,ASSETS:assetBinding()};
+    const env={...process.env,ASSETS:assetBinding(path.resolve('public'))};
     const url=env.TURSO_DATABASE_URL?.trim(),authToken=env.TURSO_AUTH_TOKEN?.trim();
     if(env.FIREBASE_PROJECT_ID) {
       try {env.DB=firestoreBinding(firebaseConnection(env).db);env.UPLOADS_DISABLED=env.UPLOADS_DISABLED||'true';}catch {}

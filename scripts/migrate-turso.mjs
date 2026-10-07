@@ -4,7 +4,7 @@ const url=process.env.TURSO_DATABASE_URL,authToken=process.env.TURSO_AUTH_TOKEN;
 if(process.env.FIREBASE_PROJECT_ID) {
   console.log('Firebase backend selected. Firestore creates collections on first write; SQL migrations are not required.');
 } else if(!url&&!authToken) {
-  if(process.argv.includes('--if-configured'))console.log('Database not connected yet. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in Vercel, then redeploy.');
+  if(process.argv.includes('--if-configured'))console.log('Skipping optional SQL migration; Firebase does not require SQL migrations.');
   else {console.error('Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN before running db:migrate.');process.exitCode=1;}
 } else if(!url||!authToken) {console.error('Both TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required.');process.exitCode=1;}
 else {

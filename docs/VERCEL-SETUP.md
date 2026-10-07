@@ -1,3 +1,7 @@
+# Current deployment: Next.js
+
+Follow [Next.js deployment](NEXTJS-DEPLOYMENT.md) first. The old static output directory below is superseded.
+
 # Deploy Redlyn from GitHub to Vercel
 
 **Current choice: Firebase Spark.** Follow [Firebase setup](FIREBASE-SETUP.md).

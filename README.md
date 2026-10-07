@@ -1,3 +1,7 @@
+# Redlyn — Next.js + Firebase
+
+See [Next.js deployment](docs/NEXTJS-DEPLOYMENT.md) for the current build and deployment commands.
+
 # Redlyn rebuild
 
 A working independent reconstruction of the public Redlyn design and its primary visual feedback workflows. The public website and signed-in dashboard, review, Team, Settings and Usage screens were compared with a user-provided reference session on October 1–3, 2026. This is an independent reconstruction, with the remaining differences recorded in `qa/comparison-report.md`.
