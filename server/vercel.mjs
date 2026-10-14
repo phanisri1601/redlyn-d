@@ -80,7 +80,7 @@ export function createVercelHandler(env) {
 let handler;
 export async function handleVercelRequest(req) {
   if(!handler) {
-    const env={...process.env,ASSETS:assetBinding(path.resolve('public'))};
+    const env={TEST_REVIEW_LIMIT:'6',...process.env,ASSETS:assetBinding(path.resolve('public'))};
     const url=env.TURSO_DATABASE_URL?.trim(),authToken=env.TURSO_AUTH_TOKEN?.trim();
     if(env.FIREBASE_PROJECT_ID) {
       try {env.DB=firestoreBinding(firebaseConnection(env).db);env.UPLOADS_DISABLED=env.UPLOADS_DISABLED||'true';}catch {}

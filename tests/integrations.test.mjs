@@ -23,3 +23,36 @@ test('temporary testing access enables capped invitations without paid entitleme
 test('invalid testing configuration is ignored and membership acceptance rechecks expiration',async()=>{const {e,owner,other,id}=await fixture();e.TEST_TEAM_MEMBER_LIMIT='0';e.TEST_TEAM_UNTIL=new Date(Date.now()+86400000).toISOString();assert.equal((await owner('/api/usage')).data.limits.members,1);e.TEST_TEAM_MEMBER_LIMIT='999';assert.equal((await owner('/api/usage')).data.testing,null);e.TEST_TEAM_MEMBER_LIMIT='5';e.TEST_TEAM_UNTIL='invalid';assert.equal((await owner('/api/usage')).data.limits.members,1);e.TEST_TEAM_UNTIL=new Date(Date.now()+86400000).toISOString();await other('/api/auth/signup',{name:'Tester',email:'tester@example.test',password:'test-password-123'});const token=(await owner('/api/workspaces/'+id+'/members',{email:'tester@example.test'})).data.token;e.TEST_TEAM_UNTIL='2020-01-01T00:00:00Z';assert.equal((await other('/api/workspace-invite/'+token,{})).status,409);assert.equal((await owner('/api/workspaces/'+id+'/members')).data.members.length,1);});
 
 test('client branding follows owner Studio entitlement and returns after expiry',async()=>{const {e,owner,id,project}=await fixture();const created=await owner('/api/projects/'+project.id+'/links',{label:'Branding test'});const path='/api/review/'+created.data.token;assert.equal((await owner(path)).data.branding,true);await paid(e,id);await e.DB.prepare("UPDATE subscriptions SET plan='Studio',product_id='p_studio'").run();assert.equal((await owner(path)).data.branding,false);await e.DB.prepare('UPDATE subscriptions SET valid_until=0').run();assert.equal((await owner(path)).data.branding,true);await owner('/api/projects/'+project.id,{archived:true},'PATCH');assert.notEqual((await owner(path)).status,200);});
+
+test('review testing limit allows six active reviews, blocks seven and deletion frees a slot',async()=>{
+ const {e,owner,other,project}=await fixture();e.TEST_REVIEW_LIMIT='6';
+ for(let i=0;i<5;i++)assert.equal((await owner('/api/projects',{name:'Test '+i,url:'https://example.org'})).status,201);
+ assert.equal((await owner('/api/projects',{name:'Seventh',url:'https://example.org'})).status,409);
+ const usage=(await owner('/api/usage')).data;assert.equal(usage.plan,'Free');assert.equal(usage.limits.websites,6);assert.equal(usage.websites,6);
+ const guest=client(e),session=(await guest('/api/review/'+project.clientToken,{name:'Client'})).data;
+ const h={'X-Review-Session':session.token};const fid=(await owner('/api/projects/'+project.id+'/feedback',pin)).data.id;
+ await owner('/api/projects/'+project.id+'/feedback/'+fid+'/comments',{text:'Reply'});
+ await other('/api/auth/signup',{name:'Other',email:'outside@example.test',password:'other-password-123'});
+ assert.equal((await other('/api/projects/'+project.id,undefined,'DELETE')).status,403);
+ assert.equal((await guest('/api/projects/'+project.id,undefined,'DELETE',h)).status,403);
+ assert.equal((await owner('/api/projects/'+project.id,undefined,'DELETE')).status,200);
+ assert.equal((await owner('/api/projects/'+project.id)).status,404);
+ assert.equal((await guest('/api/review/'+project.clientToken)).status,404);
+ assert.notEqual((await guest('/api/projects/'+project.id,undefined,'GET',h)).status,200);
+ assert.equal((await e.DB.prepare('SELECT COUNT(*) AS n FROM comments WHERE feedback_id=?').bind(fid).first()).n,0);
+ for(const table of ['feedback','links','reviewers','activity'])assert.equal((await e.DB.prepare('SELECT COUNT(*) AS n FROM '+table+(table==='reviewers'?'':' WHERE project_id=?')).bind(...(table==='reviewers'?[]:[project.id])).first()).n,0);
+ assert.equal((await owner('/api/projects',{name:'Replacement',url:'https://example.org'})).status,201);
+});
+
+test('bootstrap returns only authenticated account and accessible workspaces',async()=>{
+ const {e,owner,other,id}=await fixture();
+ const anonymous=(await other('/api/bootstrap')).data;assert.equal(anonymous.user,null);assert.deepEqual(anonymous.workspaces,[]);
+ const own=(await owner('/api/bootstrap')).data;assert.equal(own.user.id,id);assert.equal(own.workspaces.length,1);assert.equal(own.workspaces[0].id,id);assert.equal(own.user.password,undefined);
+ const outsider=(await other('/api/auth/signup',{name:'Other',email:'bootstrap-other@example.test',password:'other-password-123'})).data.user;
+ const out=(await other('/api/bootstrap')).data;assert.equal(out.workspaces.length,1);assert.equal(out.workspaces[0].id,outsider.id);
+ await paid(e,id);const token=(await owner('/api/workspaces/'+id+'/members',{email:outsider.email})).data.token;
+ await other('/api/workspace-invite/'+token,{});
+ assert.equal((await other('/api/bootstrap')).data.workspaces.some(w=>w.id===id),true);
+ await owner('/api/workspaces/'+id+'/members/'+outsider.id,undefined,'DELETE');
+ assert.equal((await other('/api/bootstrap')).data.workspaces.some(w=>w.id===id),false);
+});

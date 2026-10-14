@@ -1,3 +1,4 @@
+import {initialWorkspaceLoading} from '../../src/workspace-loading.js';
 import {landing,comparison,legal} from '../../src/marketing.js';
 // Public pages are rendered during the build. Authenticated screens retain the
 // existing tested review engine, which mounts after the Next.js page hydrates.
@@ -9,5 +10,5 @@ export default async function Page({params}) {
  if(['/', '/pricing','/features'].includes(route))html=landing();
  else if(route==='/compare')html=comparison();
  else if(['/privacy','/terms','/refund'].includes(route))html=legal(path[0]);
- return <div id="app" data-server-rendered={html?'true':undefined} dangerouslySetInnerHTML={{__html:html||'<div class="loading">Loading your workspace…</div>'}}/>;
+ return <div id="app" data-server-rendered={html?'true':undefined} dangerouslySetInnerHTML={{__html:html||(route.startsWith('/app')?initialWorkspaceLoading(route):'<div class="loading" role="status">Opening page…</div>')}}/>;
 }

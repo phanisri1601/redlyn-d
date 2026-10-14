@@ -86,7 +86,7 @@ class Store {
  async equal(table,field,value){return this.query(table,[{field,op:'=',value}]);}
  async row(table,field,value){return (await this.equal(table,field,value))[0]||null;}
  stage(table,row,id=key(table,row)){const ref=this.collection(table).doc(id);this.pending.set(ref.path,{table,ref,row});}
- remove(table,row){this.stage(table,null,key(table,row));}
+ remove(table,row){for(const field of unique[table]||[])if(row[field]!=null)this.stage('_unique',null,digest(JSON.stringify([table,field,row[field]])));this.stage(table,null,key(table,row));}
  async save(table,row,{replace=false,ignore=false}={}){
   const previous=await this.byKey(table,row);
   if(previous&&!replace){if(ignore)return 0;throw conflict('This record already exists.');}
@@ -120,7 +120,7 @@ async function select(s,sql,a) {
  if(sql.startsWith('SELECT p.*, (SELECT COUNT')){const rows=await s.accessible(a[0],a[3]);await parallelRows(rows,async p=>{const [f,approvals,rawAttachments]=await Promise.all([s.equal('feedback','project_id',p.id),s.equal('approvals','project_id',p.id),s.equal('attachments','project_id',p.id)]),attachments=sort(rawAttachments);Object.assign(p,{open_count:f.filter(open).length,feedback_count:f.length,public_open_count:f.filter(r=>!r.internal&&open(r)).length,reopened_count:f.filter(r=>!r.internal&&r.status==='Reopened').length,approval_count:approvals.length,cover_id:attachments.find(r=>!r.internal&&r.name==='screenshot.png'&&f.some(item=>item.id===r.feedback_id&&!item.internal))?.id||null});});return sort(rows);}
  if(sql.startsWith('SELECT a.*,p.name AS project_name')){const projects=await s.accessible(a[0],a[3]);let rows=[];for(const p of projects)rows.push(...(await s.equal('activity','project_id',p.id)).map(r=>({...r,project_name:p.name})));return sort(rows).slice(0,100);}
  if(sql.startsWith('SELECT n.*,p.name AS project_name')){const projects=new Map((await s.accessible(a[0],a[4])).map(p=>[p.id,p]));const rows=[];for(const n of await s.equal('notifications','user_id',a[0])){if(!projects.has(n.project_id))continue;if(!await s.byKey('feedback',{id:n.feedback_id}))continue;rows.push({...n,project_name:projects.get(n.project_id).name});}return sort(rows).slice(0,100);}
- if(sql.startsWith('SELECT COALESCE(SUM(CASE WHEN substr(f.created_at')){let rows=[];for(const p of await s.equal('projects','owner_id',a[1]))rows.push(...await s.equal('feedback','project_id',p.id));rows=rows.filter(r=>r.created_at.slice(0,7)===a[2]);return [{today:rows.filter(r=>r.created_at.slice(0,10)===a[0]).length,month:rows.length}];}
+ if(sql.startsWith('SELECT COALESCE(SUM(CASE WHEN substr(f.created_at')){let rows=[];await parallelRows(await s.equal('projects','owner_id',a[1]),async p=>{rows.push(...await s.equal('feedback','project_id',p.id));});rows=rows.filter(r=>r.created_at.slice(0,7)===a[2]);return [{today:rows.filter(r=>r.created_at.slice(0,10)===a[0]).length,month:rows.length}];}
  if(sql.startsWith('SELECT COALESCE(SUM(CASE WHEN day=')){const rows=(await s.equal('usage_daily','owner_id',a[1])).filter(r=>r.day.slice(0,7)===a[2]);return [{today:rows.filter(r=>r.day===a[0]).reduce((n,r)=>n+r.views,0),month:rows.reduce((n,r)=>n+r.views,0)}];}
  const m=sql.match(/^SELECT (.+) FROM (\w+)(?: WHERE (.*?))?(?: ORDER BY (\w+)(?: (DESC|ASC))?)?(?: LIMIT (\d+))?$/);
  if(!m)throw new Error('Unsupported Firestore read operation');

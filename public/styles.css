@@ -86,3 +86,116 @@ dialog.pin-composer::backdrop{display:none;background:none;backdrop-filter:none}
 @media(max-width:1180px) and (min-width:761px){.review-header{height:auto;min-height:64px;flex-wrap:wrap;padding:10px 14px}.review-tools{gap:7px;flex-wrap:wrap;justify-content:flex-end;flex:1;min-width:560px}.review-project{min-width:105px}.review-tools .mode-label{display:none}}
 @media(max-width:920px) and (min-width:761px){.review-tools{flex-basis:100%;justify-content:flex-start;margin:0}.review-header{gap:8px}.review-tools .review-shortcuts{margin-left:auto}}
 @media(max-width:760px){.review-header{min-height:128px;padding:9px 10px;gap:7px}.review-header .review-collapse{width:25px;padding:3px}.review-project{min-width:0;max-width:calc(100% - 115px);padding-left:10px;flex:1}.review-project .review-title{font-size:12px}.review-tools{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:6px;flex-basis:100%;min-width:0}.review-tools .review-devices{flex-shrink:0}.review-tools .review-modes{flex-shrink:0}.review-devices .device-group{width:27px!important;height:27px;padding:4px!important}.review-devices select{width:44px!important;font-size:10px}.review-modes button{padding:4px 7px;font-size:10px;height:27px!important}.review-tools .approve-control{order:0;height:29px;font-size:10px;padding:4px 7px}.review-tools .mobile-review-toggle{order:0;flex-basis:auto;margin-left:0;height:29px;padding:4px 8px;font-size:10px}.review-tools .theme,.review-tools .review-shortcuts,.review-tools .review-notifications{display:inline-flex;width:26px;height:29px;padding:4px}.review-tools .mode-label{display:none}.review-tools .review-share{display:inline-flex!important;height:29px;padding:4px 7px}.review-tools .review-share span{display:none}.review-tools .review-share .review-icon{width:15px;height:15px}.review-tools>.theme{margin-left:auto}.review-url{height:auto;min-height:36px;flex-wrap:wrap}.review-url input{flex:1;min-width:140px}.review-notice{flex-basis:100%;justify-content:flex-start}.review-notice .row{display:flex}.review-notice .row>button{display:inline-flex}.review-notice>span{display:none}.review-notice .button,.review-notice button{font-size:10px;padding:4px 8px}.comments-collapsed .feedback-sidebar.show{display:flex}}
+
+/* Device viewports retain their native dimensions; the stage owns the scaled footprint. */
+.review-layout{height:100dvh}
+.canvas-stage{position:relative;margin:0 auto;flex-shrink:0}
+.canvas-stage .canvas-wrap{position:absolute;left:0;top:0;margin:0;max-width:none;min-height:0;transform-origin:top left;transition:none}
+.canvas-stage .canvas-wrap iframe{width:100%;height:100%}
+
+.workspace-loading .page-heading{margin-bottom:24px}.skeleton-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.skeleton-line{height:14px;background:var(--border);border-radius:5px;margin:16px 0;animation:skeleton-pulse 1.5s ease-in-out infinite}.skeleton-line.short{width:55%}.skeleton-line.value{height:28px;width:38%}.skeleton-panel{margin-top:20px;min-height:180px}.skeleton-sidebar>.skeleton-line{margin-top:30px}.workspace-loading{max-width:1100px}@keyframes skeleton-pulse{50%{opacity:.45}}@media(prefers-reduced-motion:reduce){.skeleton-line{animation:none}}@media(max-width:760px){.skeleton-summary{grid-template-columns:1fr}.skeleton-sidebar>.skeleton-line{display:none}}
+
+.review-devices #preview-zoom{width:83px!important;max-width:100px;border-left:1px solid var(--border)!important;border-radius:0;padding-left:7px!important;font-size:11px}@media(max-width:760px){.review-devices #preview-zoom{width:68px!important;font-size:10px}.review-tools{row-gap:7px}}
+
+.review-devices #preview-rendering{width:99px!important;max-width:110px;font-size:11px;border-left:1px solid var(--border)!important;border-radius:0}@media(max-width:760px){.review-devices #preview-rendering{width:75px!important;font-size:10px}.review-tools .review-devices{flex-shrink:1;flex-wrap:wrap}}
+
+/* Keep the auth sample readable without changing the landing-page demo. */
+.auth-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.auth-left,.auth-right,.auth-right>div{min-width:0}
+.auth-right{padding:40px clamp(24px,4vw,56px)}
+.auth-right>div{max-width:520px}
+.auth-right .preview-shell{margin:0 0 24px;width:100%;max-width:none}
+.auth-right .mock-bar{gap:12px;flex-wrap:wrap}
+.auth-right .mock-content{grid-template-columns:minmax(0,1fr);min-height:0}
+.auth-right .coffee{padding:24px 28px}
+.auth-right .coffee-nav{gap:14px;font-size:11px;flex-wrap:wrap}
+.auth-right .coffee-nav strong{font-size:23px}
+.auth-right .coffee-hero{max-width:410px;padding:22px 0}
+.auth-right .coffee h3{font-size:40px;line-height:1.12;margin:12px 0}
+.auth-right .coffee-hero p{max-width:350px;margin:12px 0 16px}
+.auth-right .coffee-items{gap:10px}
+.auth-right .coffee-items .bean{min-width:0;flex:1;padding:12px 8px;font-size:12px;overflow-wrap:break-word}
+.auth-right .mock-pin{left:72%;top:43%}
+.auth-right .mock-comments{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px;border-top:1px solid var(--border)}
+.auth-right .mock-comments header{grid-column:1/-1;margin:0 0 2px}
+.auth-right .mock-comment{min-width:0;margin:0;padding:12px}
+.auth-right .mock-author{flex-wrap:wrap;gap:6px}
+.auth-right .mock-author .hint{font-size:11px}
+.auth-right .mock-comment .feature-art{justify-content:space-between;font-size:11px;gap:6px}
+.auth-right .mock-comment .wave{font-size:15px;letter-spacing:-1px}
+.auth-right .mock-comments>.button{grid-column:1/-1;margin-top:2px}
+.auth-right>div>h2{font-size:24px;margin:0 0 6px}
+.auth-right>div>.section-intro{margin:0;font-size:15px}
+@media(min-width:761px) and (max-width:1050px){
+  .auth-layout{grid-template-columns:minmax(0,1fr)}
+  .auth-left{min-height:100vh}
+  .auth-right{border-left:0;border-top:1px solid var(--border);padding:40px 24px}
+}
+@media(max-width:760px){.auth-layout{grid-template-columns:minmax(0,1fr)}}
+
+/* Interactive sample controls stay inside the sample, never the real review UI. */
+.interactive-sample .sample-help{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--surface);font-size:12px;flex-wrap:wrap}
+.interactive-sample .sample-help>div{flex:1;min-width:180px}.interactive-sample .sample-help strong{display:block;font-size:12px}.interactive-sample .sample-help span{display:block;color:var(--muted);margin-top:2px}.interactive-sample .sample-help button{font-size:12px;padding:6px 10px}
+.interactive-sample .coffee{cursor:crosshair;min-height:360px}
+.interactive-sample .sample-pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;padding:0;display:grid;place-items:center;background:var(--accent);border:3px solid white;border-radius:50%;color:#fff;font:700 12px Inter,system-ui,sans-serif;box-shadow:0 2px 8px #0003;z-index:2;cursor:pointer}.interactive-sample .sample-pin.private{background:var(--purple)}.interactive-sample .sample-pin.resolved{background:#317b57}.interactive-sample .sample-draft-pin{font-size:20px;pointer-events:none}
+.interactive-sample .sample-composer{position:absolute;z-index:4;width:min(310px,calc(100% - 16px));padding:14px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 30px #0004;cursor:default;font:13px/1.5 Inter,system-ui,sans-serif;text-align:left}
+.interactive-sample .sample-composer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.interactive-sample .sample-composer-head button{padding:2px 8px;font-size:20px;line-height:1.2}.interactive-sample .sample-composer>label{display:block;font-size:12px;margin-bottom:6px}.interactive-sample .sample-composer textarea{display:block;width:100%;resize:vertical;min-height:80px;max-height:100px;padding:9px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px}.interactive-sample .sample-composer .sample-private{display:flex;align-items:center;gap:7px;margin:10px 0}.interactive-sample .sample-private input{accent-color:var(--accent)}.interactive-sample .sample-composer-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}.interactive-sample .sample-composer .hint{font-size:11px;margin:10px 0 0}
+.interactive-sample .sample-comment-action{display:block;width:100%;margin-top:10px;font-size:11px}.interactive-sample .mock-comment.sample-selected{border-color:var(--accent)}.interactive-sample .mock-comment .sample-next-step{font-size:11px!important;color:var(--muted)!important;margin:8px 0 0!important}.interactive-sample .sample-approval{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;margin:8px 0 12px}.interactive-sample .sample-approval .hint{font-size:11px}.interactive-sample .sample-approval button:disabled{cursor:default}
+.interactive-sample .sample-announcement{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:760px){.interactive-sample .mock-comments{display:block;padding:16px}.interactive-sample .sample-help{padding:12px}.interactive-sample .sample-help>div{flex-basis:100%}.interactive-sample .sample-help button{min-height:36px}.interactive-sample .sample-pin{width:34px;height:34px}.interactive-sample .sample-composer{padding:12px}.interactive-sample .sample-composer-head strong{font-size:12px}}
+
+/* Preview status stays visible outside website content. */
+.preview-status{position:sticky;top:0;z-index:6;flex:0 0 auto;align-self:stretch;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin:0 0 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:12px}.preview-status:empty{display:none}.preview-status.needs-recovery{color:var(--text);border-color:var(--accent)}.preview-status .row{flex-wrap:wrap}.canvas-area{flex-direction:column}@media(max-width:760px){.preview-status{flex-wrap:wrap;font-size:11px}.preview-status .button,.preview-status button{font-size:11px}}
+
+/* Responsive page layouts: keep wide data inside its own scroll area. */
+.workspace-main,.content,.panel,.dashboard-columns>*,.project-cards,.project-grid>*{min-width:0}
+.page-heading>div{min-width:0}.page-heading h1,.page-heading p,.workspace-top,.activity-item>div,.panel>p{overflow-wrap:anywhere}
+.table-scroll{width:100%;min-width:0;overscroll-behavior-x:contain}
+.tabs{min-width:0;max-width:100%;overscroll-behavior-x:contain}.tabs>a{flex-shrink:0}
+.copy-box code{min-width:0;overflow-wrap:anywhere;white-space:normal}.copy-box button{flex-shrink:0}
+.activity-item>div{min-width:0}.stat{min-width:0}.stat strong{overflow-wrap:anywhere}
+dialog{max-width:calc(100vw - 24px)}
+@media(max-width:760px){
+ .page-heading{flex-direction:column;align-items:stretch;gap:16px}.page-heading>.row{flex-wrap:wrap;justify-content:flex-start}
+ .page-heading>.row .button,.page-heading>.row button{min-height:42px}
+ .panel{padding:18px}.panel>.row.spread{flex-wrap:wrap;gap:12px}.panel>.row.spread h2{margin:0}
+ .workspace-top{height:auto;min-height:54px;gap:10px;padding:12px 18px;flex-wrap:wrap}
+ .tabs{gap:18px}.tabs>a{padding-top:10px;padding-bottom:10px}
+ .toolbar input.search{width:100%;flex:1 1 100%;min-width:0}.toolbar select.search{max-width:100%}
+ input,textarea,select{font-size:16px}.field input,.field textarea,.field select{font-size:16px;min-height:44px}
+ .coffee-items{flex-wrap:wrap;gap:8px}.bean{white-space:normal;min-width:0;flex:1 1 90px;text-align:center;align-items:center}
+ .auth-form h1,.legal h1,.panel h1{overflow-wrap:anywhere}
+ .activity-item{gap:10px}.activity-item>button{flex-shrink:0}
+ dialog{padding:18px;max-height:calc(100dvh - 24px)}.dialog-head{gap:12px}.dialog-head h2{overflow-wrap:anywhere;font-size:21px}
+ .dialog-actions{flex-wrap:wrap;gap:8px}.dialog-actions button{min-height:44px}
+ .review-tools .review-devices{max-width:100%}.review-devices select{min-width:0}
+}
+@media(max-width:480px){
+ .prices{grid-template-columns:minmax(0,1fr)}.price{min-width:0;padding:22px}.price-value{font-size:34px}
+ .steps{grid-template-columns:minmax(0,1fr)}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .footer-grid{grid-template-columns:minmax(0,1fr)}.hero h1{font-size:clamp(40px,11.5vw,51px)}
+ .review-tools .review-devices{width:100%}.review-devices #device-select{flex:1;max-width:80px}
+ .review-tools button,.review-tools .button{min-height:32px}.review-header .review-share{min-width:34px}
+ .sample-approval button{white-space:normal}
+}
+@media(min-width:761px) and (max-width:1050px){
+ .page-heading{flex-wrap:wrap}.page-heading>div:first-child{flex:1 1 300px}
+ .page-heading>.row{flex-wrap:wrap}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .workspace-top{height:auto;min-height:66px;gap:12px;padding:16px 25px;flex-wrap:wrap}
+}
+@media(min-width:761px) and (max-width:1050px){.dashboard-heading{margin:0 -25px 28px;padding:0 25px 30px}}
+@media(max-width:480px){.create-review{flex-wrap:wrap;padding:10px}.create-review input{flex:1;min-width:0;font-size:16px}.create-review button{flex-basis:100%;min-height:42px}.create-review kbd{display:none}.review-list-toolbar>.row{width:100%;min-width:0}.review-list-toolbar .search{min-width:0;flex:1;width:auto}}
+/* Allow native browsing gestures through the review frame. */
+.canvas-wrap iframe{touch-action:pan-x pan-y pinch-zoom}.feedback-sidebar,.feedback-list{touch-action:pan-y}.pin-layer:not(.capturing){pointer-events:none}
+/* Mobile comment taps are handled by the trusted review controls. */
+.pin-layer.capturing{touch-action:none}.canvas-wrap iframe{touch-action:auto}
+
+.pin-layer.mobile-browse{pointer-events:none}
+
+/* The mobile frame owns scrolling. Do not put a second scroll container or
+   rounded clipping layer around its cross-origin input surface. */
+@media(max-width:760px){
+ .review-body>.canvas-area{overflow:clip;touch-action:auto}
+ .canvas-stage .canvas-wrap{overflow:visible;border-radius:0}
+ .canvas-stage .canvas-wrap iframe{border-radius:0;touch-action:auto;pointer-events:auto}
+}

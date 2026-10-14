@@ -70,7 +70,7 @@ test('asset adapter serves preview documents and cannot escape its root',async()
 test('Next.js deployment uses native route handlers and the Mumbai region',async()=>{
   const config=JSON.parse(await readFile('vercel.json','utf8'));
   assert.equal(config.framework,'nextjs');assert.deepEqual(config.regions,['bom1']);
-  assert.equal(config.outputDirectory,undefined);assert.equal(config.rewrites,undefined);
+  assert.equal(config.outputDirectory,'.next');assert.equal(config.rewrites,undefined);
   for(const file of ['app/api/[...path]/route.js','app/preview/[...path]/route.js']) {
     const route=await readFile(file,'utf8');assert.match(route,/runtime='nodejs'/);assert.match(route,/dynamic='force-dynamic'/);assert.match(route,/GET=handleVercelRequest/);assert.match(route,/POST=handleVercelRequest/);
   }
